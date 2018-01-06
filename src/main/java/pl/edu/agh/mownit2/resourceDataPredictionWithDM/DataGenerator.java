@@ -76,13 +76,13 @@ public class DataGenerator {
         return max;
     }
 
-    private double calculateVal(int[] array, int i, int k){
+    private double calculateVal(int[] array, int i, double k){
         return -1 * k * (i-array[0]) * (i-array[1]) * (i-array[2]) * (i-array[3]);
     }
 
     private double calculateMappedVal(int[] array, int i, double max, double k){
-        return (-1 * k * (i-array[0]) * (i-array[1]) * (i-array[2]) * (i-array[3])) > 0 ?
-                (-1 * k * (i-array[0]) * (i-array[1]) * (i-array[2]) * (i-array[3])/max) : 0;
+        return (calculateVal(array, i, k)) > 0 ?
+                (calculateVal(array, i, k)/max) : 0;
     }
 
     private void saveDataIntoARFFFile(){
