@@ -14,19 +14,22 @@ public class DataGenerator {
     double[]            vals;
     private File file;
     private Instances data;
+    private int numOfDays;
 
     public DataGenerator(int numOfDays){
+        this.numOfDays = numOfDays;
         // set up attributes
         atts = new ArrayList<Attribute>();
         atts.add(new Attribute("dateAttr"));
+        atts.add(new Attribute("userAttr"));
         atts.add(new Attribute("cpuUsage"));
         atts.add(new Attribute("diskWrite"));
         atts.add(new Attribute("diskRead"));
         // create Instance Object
         data = new Instances("SampleRelation", atts, 0);
-        for(int i = 0; i < numOfDays; i++) {
+        //for(int i = 0; i < numOfDays; i++) {
             generateSetOfData();
-        }
+        //}
 
         file = new File("./data/test.arff");
         saveDataIntoARFFFile();
@@ -47,12 +50,15 @@ public class DataGenerator {
         int maxWriteValue = 320;
 
         for(int i = 0; i < 1440; i++) {
-            vals = new double[data.numAttributes()];
-            vals[0] = (double) i;
-            vals[1] = calculateMappedVal(func, i, maxVal, kValueForCPU)*100;
-            vals[2] = calculateMappedVal(func, i, maxVal, kValueForDataRead)*maxReadValue;
-            vals[3] = calculateMappedVal(func, i, maxVal, kValueForDataWrite)*maxWriteValue;
-            data.add(new DenseInstance(1.0, vals));
+            for(int j = 0; j < numOfDays; j++){
+                vals = new double[data.numAttributes()];
+                vals[0] = (double) i;
+                vals[1] = (double) j;
+                vals[2] = calculateMappedVal(func, i + j * 20, maxVal, kValueForCPU)*100*Math.abs(Math.sin(i));
+                vals[3] = calculateMappedVal(func, i+ j * 20, maxVal, kValueForDataRead)*maxReadValue*Math.abs(Math.cos(i));
+                vals[4] = calculateMappedVal(func, i+ j * 20, maxVal, kValueForDataWrite)*maxWriteValue/**Math.abs(Math.sin(i)*Math.cos(i))*/;
+                data.add(new DenseInstance(1.0, vals));
+            }
         }
     }
 
