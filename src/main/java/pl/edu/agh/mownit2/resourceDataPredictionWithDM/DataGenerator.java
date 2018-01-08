@@ -6,7 +6,11 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DataGenerator {
@@ -14,20 +18,43 @@ public class DataGenerator {
     double[]            vals;
     private File file;
     private Instances data;
-    private int numOfDays;
+    private int numOfSensors;
 
-    public DataGenerator(int numOfDays){
-        this.numOfDays = numOfDays;
+    private List<String> getNominalList1(){
+        List<String> nominals = new LinkedList<>();
+        for(int i = 0; i < 1440; i++){
+            DecimalFormat df = new DecimalFormat("#");
+            nominals.add(df.format(i));
+        }
+        return nominals;
+    }
+
+    private List<String> getNominalList3(){
+        List<String> nominals = new LinkedList<>();
+        for(int i = 0; i < 100; i++){
+            //double res = i * 0.1;
+            DecimalFormat df = new DecimalFormat("#");
+            nominals.add(df.format(i));
+            //System.out.println(df.format(res));
+        }
+        return nominals;
+    }
+
+    public DataGenerator(int numOfSensors){
+        this.numOfSensors = numOfSensors;
         // set up attributes
+        List<String>p=new LinkedList<>();
+       p.add("0");
         atts = new ArrayList<Attribute>();
-        atts.add(new Attribute("dateAttr"));
-        atts.add(new Attribute("userAttr"));
-        atts.add(new Attribute("cpuUsage"));
-        atts.add(new Attribute("diskWrite"));
-        atts.add(new Attribute("diskRead"));
+        atts.add(new Attribute("dateAttr", getNominalList1()));
+        atts.add(new Attribute("userAttr", p));
+        //atts.add(new Attribute("cpuUsage"));
+        atts.add(new Attribute("cpuUsage", getNominalList3()));
+        /*atts.add(new Attribute("diskWrite"));
+        atts.add(new Attribute("diskRead"));*/
         // create Instance Object
         data = new Instances("SampleRelation", atts, 0);
-        //for(int i = 0; i < numOfDays; i++) {
+        //for(int i = 0; i < numOfSensors; i++) {
             generateSetOfData();
         //}
 
@@ -48,15 +75,19 @@ public class DataGenerator {
         //max Values in Mb/s
         int maxReadValue = 550;
         int maxWriteValue = 320;
-
+        for(int z =0; z < 3; z++)
         for(int i = 0; i < 1440; i++) {
-            for(int j = 0; j < numOfDays; j++){
+            for(int j = 0; j < numOfSensors; j++){
                 vals = new double[data.numAttributes()];
                 vals[0] = (double) i;
                 vals[1] = (double) j;
-                vals[2] = calculateMappedVal(func, i + j * 20, maxVal, kValueForCPU)*100*Math.abs(Math.sin(i));
-                vals[3] = calculateMappedVal(func, i+ j * 20, maxVal, kValueForDataRead)*maxReadValue*Math.abs(Math.cos(i));
-                vals[4] = calculateMappedVal(func, i+ j * 20, maxVal, kValueForDataWrite)*maxWriteValue/**Math.abs(Math.sin(i)*Math.cos(i))*/;
+                double val = calculateMappedVal(func, i + j * 20, maxVal, kValueForCPU)*100/**Math.abs(Math.sin(i))*10*/;
+                val *= 10;
+                val = Math.round(val);
+                vals[2] =  val/10;
+                System.out.println("PP"+vals[2]);
+                /*vals[3] = calculateMappedVal(func, i+ j * 20, maxVal, kValueForDataRead)*maxReadValue*Math.abs(Math.cos(i));
+                vals[4] = calculateMappedVal(func, i+ j * 20, maxVal, kValueForDataWrite)*maxWriteValue*//**Math.abs(Math.sin(i)*Math.cos(i))*//*;*/
                 data.add(new DenseInstance(1.0, vals));
             }
         }
