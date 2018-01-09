@@ -1,0 +1,5 @@
+set term png
+set xlabel "time in min"
+set ylabel "CPU usage %"
+set output "sensor1.png"
+plot "actual1.data" title "actual", "predicted1.data" title "predicted"
