@@ -29,7 +29,11 @@ public class DataGenerator {
         return nominals;
     }
 
-    public DataGenerator(int numOfSensors) {
+    public static void main(String[] args) {
+        new DataGenerator(2);
+    }
+
+    DataGenerator(int numOfSensors) {
         this.numOfSensors = numOfSensors;
         // set up attributes
         List<String> p = new LinkedList<>();
@@ -43,7 +47,13 @@ public class DataGenerator {
         data = new Instances("SampleRelation", atts, 0);
         generateSetOfData();
 
-        file = new File("./data/test.arff");
+        file = new File("./data/trainingData.arff");
+        saveDataIntoARFFFile();
+
+        data = new Instances("SampleRelation", atts, 0);
+        generateSetOfData();
+
+        file = new File("./data/dataToPredict.arff");
         saveDataIntoARFFFile();
     }
 
